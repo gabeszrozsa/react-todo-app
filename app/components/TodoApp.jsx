@@ -2,6 +2,7 @@ import React from 'react';
 import TodoList from 'TodoList';
 import AddTodo from 'AddTodo';
 import TodoSearch from 'TodoSearch';
+import uuid from 'node-uuid';
 
 export default class TodoApp extends React.Component {
   constructor(props) {
@@ -11,29 +12,58 @@ export default class TodoApp extends React.Component {
       searchText: '',
       todos: [
         {
-          id: 1,
-          text: 'Walk the dog'
+          id: uuid(),
+          text: 'Walk the dog',
+          completed: false
         },
         {
-          id: 2,
-          text: 'Clean the yard'
+          id: uuid(),
+          text: 'Clean the yard',
+          completed: true
         },
         {
-          id: 3,
-          text: 'Leave mail on porch'
+          id: uuid(),
+          text: 'Leave mail on porch',
+          completed: true
         },
         {
-          id: 4,
-          text: 'Play video games'
+          id: uuid(),
+          text: 'Play video games',
+          completed: false
         }
       ]
     };
 
     this.handleSearch = this.handleSearch.bind(this);
+    this.handleAddTodo = this.handleAddTodo.bind(this);
+    this.handleToggle = this.handleToggle.bind(this);
   }
 
   handleAddTodo(text) {
-    alert(`new todo: ${text}`);
+    this.setState({
+      todos: [
+        ...this.state.todos,
+        {
+          id: uuid(),
+          text,
+          completed: false
+        }
+      ]
+    });
+  };
+
+  handleToggle(id) {
+    const updatedTodos = this.state.todos.map((todo) => {
+      if (todo.id === id) {
+        todo.completed = !todo.completed;
+      }
+
+      return todo;
+    });
+
+    this.setState({
+      todos: updatedTodos
+    });
   }
 
   handleSearch(showCompleted, searchText) {
@@ -48,7 +78,7 @@ export default class TodoApp extends React.Component {
     return (
       <div>
         <TodoSearch onSearch={this.handleSearch}/>
-        <TodoList todos={todos}/>
+        <TodoList todos={todos} onToggle={this.handleToggle}/>
         <AddTodo onAddTodo={this.handleAddTodo}/>
       </div>
     );
