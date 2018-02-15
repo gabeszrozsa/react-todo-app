@@ -4,7 +4,7 @@ import AddTodo from 'AddTodo';
 import TodoSearch from 'TodoSearch';
 import uuid from 'node-uuid';
 
-import { setTodos, getTodos } from 'TodoAPI';
+import { setTodos, getTodos, filterTodos } from 'TodoAPI';
 
 export default class TodoApp extends React.Component {
   constructor(props) {
@@ -31,7 +31,9 @@ export default class TodoApp extends React.Component {
         {
           id: uuid(),
           text,
-          completed: false
+          completed: false,
+          createdAt: new Date(),
+          completedAt: undefined
         }
       ]
     });
@@ -41,6 +43,7 @@ export default class TodoApp extends React.Component {
     const updatedTodos = this.state.todos.map((todo) => {
       if (todo.id === id) {
         todo.completed = !todo.completed;
+        todo.completedAt = todo.completed ? new Date() : undefined;
       }
 
       return todo;
@@ -59,11 +62,13 @@ export default class TodoApp extends React.Component {
   }
 
   render() {
-    const { todos } = this.state;
+    const { todos, showCompleted, searchText } = this.state;
+    const filteredTodos = filterTodos(todos, showCompleted, searchText);
+
     return (
       <div>
         <TodoSearch onSearch={this.handleSearch}/>
-        <TodoList todos={todos} onToggle={this.handleToggle}/>
+        <TodoList todos={filteredTodos} onToggle={this.handleToggle}/>
         <AddTodo onAddTodo={this.handleAddTodo}/>
       </div>
     );
